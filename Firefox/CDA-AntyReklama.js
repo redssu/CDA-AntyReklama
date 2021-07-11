@@ -11,7 +11,7 @@ function skipVideo () {
         return;
     }
 
-    advertisement.currentTime = advertisement.duration;
+    advertisement.currentTime = isFinite( advertisement.duration ) ? advertisement.duration : 600;
     console.log( "[CDA-AntyReklama.js] Skipping the advertisement" );
 }
 
@@ -49,6 +49,10 @@ window.onload = function () {
     } );
 
     let container = document.querySelector( ".pb-video-ad-container" );
+    if ( container == null ) {
+        return;
+    }
+
     let observer = new MutationObserver( detectVideoAndAttachHook );
 
     observer.observe( container, {
