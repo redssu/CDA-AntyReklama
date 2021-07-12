@@ -2,11 +2,12 @@ window.skipAd = true;
 window.isCDAFrame = false;
 
 function skipVideo () {
-    if ( window.skipAd == false || window.isCDAFrame == false ) {
+    if ( !window.skipAd ) {
         return;
     }
     
     let advertisement = document.querySelector( "video.pb-ad-video-player" );
+
     if ( advertisement == null || advertisement.paused || advertisement.ended ) {
         return;
     }
@@ -16,10 +17,6 @@ function skipVideo () {
 }
 
 function detectVideoAndAttachHook () {
-    if ( window.isCDAFrame == false ) {
-        return;
-    }
-
     let video = document.querySelector( "video.pb-ad-video-player" );
 
     if ( video == null ) {
@@ -28,27 +25,18 @@ function detectVideoAndAttachHook () {
 
     video.addEventListener( "play", skipVideo );
     video.addEventListener( "timeupdate", skipVideo );
-    console.log( "[CDA-AntyReklama.js] Hooking up the blocker" );
+    console.log( "[CDA-AntyReklama.js] Hooking up the blocker to video object" );
 }
 
 window.onload = function () {
-    if ( !window.location.host.includes( "cda" ) ) {
-        return;
-    }
-
     console.log( "[CDA-AntyReklama.js] Injected" ); 
-    window.isCDAFrame = true;
-
-    browser.storage.local.get( [ "block" ] ).then( function ( result ) {
-        if ( result[ "block" ] === undefined 
-        || typeof result[ "block" ] == "undefined" ) {
-            result[ "block" ] = true;
-        }
-        
+    
+    browser.storage.local.get( { "block" : true } ).then( function ( result ) {
         window.skipAd = result[ "block" ];
     } );
 
     let container = document.querySelector( ".pb-video-ad-container" );
+
     if ( container == null ) {
         return;
     }
@@ -64,13 +52,9 @@ window.onload = function () {
     detectVideoAndAttachHook();
 }
 
-browser.runtime.onMessage.addListener( function ( message ) {
-    if ( window.isCDAFrame == false ) {
-        return;
-    }
-
-    console.log( "[CDA-AntyReklama.js] Received new blocking state: " + message.state );
-    if ( message.hasOwnProperty( "state" ) ) {
-        window.skipAd = message.state;
+browser.storage.onChanged.addListener( function ( changes, area ) {
+    if ( area == "local" && changes.hasOwnProperty( "block" ) ) {
+        console.log( "[CDA-AntyReklama.js] Received new blocking state" );
+        window.skipAd = !!changes[ "block" ].newValue;
     }
 } );

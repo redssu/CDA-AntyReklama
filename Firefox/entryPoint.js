@@ -1,4 +1,6 @@
 function updateCheckbox ( state ) {
+    document.getElementById( "js-change-state" ).checked = state;
+
     if ( state ) {
         document.getElementById( "js-status" ).classList.toggle( "green", false );
         document.getElementById( "js-status" ).classList.toggle( "red", true );
@@ -11,31 +13,15 @@ function updateCheckbox ( state ) {
     }
 }
 
-function propagateChange ( state ) {
-    browser.tabs.query( { "url" : browser.runtime.getManifest().content_scripts[ 0 ].matches } ).then( function ( tabs ) {
-        let obj = { "state": state };
-        for ( let i = 0; i < tabs.length; i++ ) {
-            chrome.tabs.sendMessage( tabs[ i ].id, obj );
-        }
-    } );
-}
-
 function init () {
     document.getElementById( "js-change-state" ).addEventListener( "change", function ( event ) {
         let state = !!event.target.checked;
-        chrome.storage.local.set( { "block" : state } );
-        updateCheckbox( state );
-        propagateChange( state );
+        browser.storage.local.set( { "block" : state } ).then( function () {
+            updateCheckbox( state );
+        } );
     } );
 
-    browser.storage.local.get( [ "block" ] ).then( function( result ) {
-        if ( result[ "block" ] === undefined 
-        || typeof result[ "block" ] == "undefined" ) {
-            chrome.storage.local.set( { "block" : false } );
-            result[ "block" ] = false;
-        }
-
-        document.getElementById( "js-change-state" ).checked = result[ "block" ];
+    browser.storage.local.get( { "block" : true } ).then( function( result ) {
         updateCheckbox( result[ "block" ] )
     } );
 }
