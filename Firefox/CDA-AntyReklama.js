@@ -1,12 +1,11 @@
 window.skipAd = true;
-window.isCDAFrame = false;
 
-function skipVideo () {
+function skipVideo ( event ) {
     if ( !window.skipAd ) {
         return;
     }
     
-    let advertisement = document.querySelector( "video.pb-ad-video-player" );
+    let advertisement = event.currentTarget == null ? event.target : event.currentTarget;
 
     if ( advertisement == null || advertisement.paused || advertisement.ended ) {
         return;
@@ -17,15 +16,23 @@ function skipVideo () {
 }
 
 function detectVideoAndAttachHook () {
-    let video = document.querySelector( "video.pb-ad-video-player" );
+    let container = document.querySelector( ".pb-video-ad-container" );
 
-    if ( video == null ) {
+    if ( container == null ) {
         return;
     }
 
-    video.addEventListener( "play", skipVideo );
-    video.addEventListener( "timeupdate", skipVideo );
-    console.log( "[CDA-AntyReklama.js] Hooking up the blocker to video object" );
+    let videos = [ ...container.querySelectorAll( "video" ) ];
+
+    if ( videos.length == 0 ) {
+        return;
+    }
+
+    videos.forEach( function ( video ) {
+        video.addEventListener( "play", skipVideo );
+        video.addEventListener( "timeupdate", skipVideo );
+        console.log( "[CDA-AntyReklama.js] Hooking up the blocker to video object" );
+    } );
 }
 
 window.onload = function () {

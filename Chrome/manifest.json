@@ -4,7 +4,7 @@
     "name": "CDA-AntyReklama",
     "description": "Wtyczka usuwająca reklamy z odtwarzacza CDA",
     "author": "Redssu",
-    "version": "1.0.2",
+    "version": "1.0.3",
 
     "action" : {
         "default_icon" : {
