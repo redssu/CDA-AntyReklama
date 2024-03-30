@@ -1,6 +1,9 @@
 window.skipAd = true;
+window.lastAdSkippedTime = null;
 
-function skipVideo (event) {
+let getTimestamp = () => (new Date()).getTime();
+
+function skipVideo(event) {
     if (!window.skipAd) {
         return;
     }
@@ -11,11 +14,20 @@ function skipVideo (event) {
         return;
     }
 
-    advertisement.currentTime = isFinite( advertisement.duration ) ? advertisement.duration : 600;
+    if (window.lastAdSkippedTime != null) {
+        if (getTimestamp() - window.lastAdSkippedTime < 1000) {
+            console.log("[CDA-AntyReklama.js] Skipping is throttled");
+            return;
+        }
+    }
+
+    window.lastAdSkippedTime = getTimestamp();
+
+    advertisement.currentTime = isFinite(advertisement.duration) ? Math.ceil(advertisement.duration) : 600;
     console.log("[CDA-AntyReklama.js] Skipping the advertisement");
 }
 
-function detectVideoAndAttachHook () {
+function detectVideoAndAttachHook() {
     let container = document.querySelector(".pb-video-ad-container");
 
     if (container == null) {

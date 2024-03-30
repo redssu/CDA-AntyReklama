@@ -4,26 +4,26 @@
     "name": "CDA-AntyReklama",
     "description": "Wtyczka usuwająca reklamy z odtwarzacza CDA",
     "author": "Redssu",
-    "version": "1.0.4",
+    "version": "1.0.5",
 
-    "action" : {
-        "default_icon" : {
-            "256" : "icon.png"
+    "action": {
+        "default_icon": {
+            "256": "icon.png"
         },
         "default_title": "Otwórz ustawienia",
         "default_popup": "entryPoint.html"
     },
 
-    "icons" : {
-        "256" : "icon.png"
+    "icons": {
+        "256": "icon.png"
     },
 
-    "content_scripts" : [
+    "content_scripts": [
         {
-            "matches" : [ "*://*.cda.pl/*", "*://cda.pl/*" ],
-            "js" : [ "CDA-AntyReklama.js" ],
+            "matches": ["*://*.cda.pl/*", "*://cda.pl/*"],
+            "js": ["CDA-AntyReklama.js"],
             "all_frames": true,
-            "run_at" : "document_end"
+            "run_at": "document_end"
         }
     ],
 
